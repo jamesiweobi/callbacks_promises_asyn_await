@@ -1,6 +1,7 @@
 // const { default: axios } = require('axios');
 const fs = require('fs')
 const axios = require('axios')
+const { resolveCaa } = require('dns')
 
 // fs.readFileSync("/docs/newfile.json",)
 
@@ -62,25 +63,58 @@ const newObj = {
 // }).catch((err) => console.log(err))
 
 
-const asyncFun = async function (arg) {
-try { const data = fs.readFileSync(arg, 'utf-8');
-  // const response = await fetch();
-  console.log(data, "DOG BREED")
-  const response = await axios.get(`https://dog.ceo/api/breed/${data.toLowerCase()}/images/random`);
-  console.log(response.data)
-  fs.writeFile(`./docs/dogImage.json`,
-      JSON.stringify(
-      { [data]: response.data.message}
-      ),  (err) =>console.log( err))
-  console.log('DONE')
-}catch (err){ 
-  throw err
-}
-}
+// const asyncFun = async function (arg) {
+// try { const data = fs.readFileSync(arg, 'utf-8');
+//   // const response = await fetch();
+//   console.log(data, "DOG BREED")
+//   const response = await axios.get(`https://dog.ceo/api/breed/${data.toLowerCase()}/images/random`);
+//   console.log(response.data)
+//   fs.writeFile(`./docs/dogImage.json`,
+//       JSON.stringify(
+//       { [data]: response.data.message}
+//       ),  (err) =>console.log( err))
+//   console.log('DONE')
+// }catch (err){ 
+//   throw err
+// }
+// }
 
-asyncFun('./docs/newfile.txt')
+// asyncFun('./docs/newfile.txt')
 
 //
+
+const logger = (value)=> {
+  console.log(value, "COMING FROM THE LOGGER FUNCTION")
+  return value
+}
+
+
+const readFilePro = function (path, encode) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path, encode, function (err, value) {
+      if (err) reject("Failed to read file from path: " + path)
+      resolve(value)
+    })
+  })
+}
+
+
+const writeFilePro = (path, data) => {
+  return new Promise((resolve, reject) => {
+    fs.writeFile(path, data, function (err, data) {
+      if (err) reject('Failed to write file: ' + path)
+      resolve(data)
+    })
+  })
+}
+
+readFilePro('./docs/newfile.txt', "utf-8")
+    .then(data => {
+      return logger(data)
+      })
+    .then(data=> writeFilePro('./docs/newfile3.txt', data)).catch(err => {
+      console.log(err)
+    })
 
 
 
